@@ -1,0 +1,12 @@
+# Python関連
+__pycache__/
+*.pyc
+*.pyo
+instance/
+
+# Node.js関連
+node_modules/
+.next/
+
+# 環境変数
+.env
