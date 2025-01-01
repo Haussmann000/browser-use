@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>エージェントタスク実行</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+        #result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>エージェントタスク実行</h1>
+    <form id="task-form">
+        <textarea name="task" placeholder="タスクを入力してください..." required></textarea>
+        <br>
+        <button type="submit">実行</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        const form = document.getElementById('task-form');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const task = formData.get('task');
+
+            resultDiv.innerHTML = "実行中...";
+            try {
+                const response = await fetch('/run-task', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    resultDiv.innerHTML = `<strong>エラー:</strong> ${data.error}`;
+                } else {
+                    resultDiv.innerHTML = `<strong>結果:</strong><pre>${data.result}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<strong>エラー:</strong> ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
