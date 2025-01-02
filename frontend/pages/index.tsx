@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { encoding_for_model } from "tiktoken";
 
-type ApiResponse = {
+export interface TokenUsage {
+  prompt_tokens: number;       // プロンプトに使用されたトークン数
+  completion_tokens: number;   // 応答生成に使用されたトークン数
+  total_tokens: number;        // 合計トークン数
+}
+
+type AgentResponse = {
   result: string;
+  token_usage: TokenUsage | null;
 };
 
 const Home: React.FC = () => {
   const [task, setTask] = useState<string>("");
   const [result, setResult] = useState<string | null>(null);
+  const [tokenUsage, setTokenUsage] = useState<AgentResponse["token_usage"]>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -50,8 +58,9 @@ const Home: React.FC = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data: ApiResponse = await response.json();
+      const data: AgentResponse = await response.json();
       setResult(data.result);
+      setTokenUsage(data.token_usage);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error occurred");
     } finally {
@@ -109,10 +118,9 @@ const Home: React.FC = () => {
           fontSize: "16px",
         }}
         >
-        <span>推計トークン数:</span> {tokenCount}
+        <span>推計トークン： {tokenCount}  ( caliculated by <b><a href="https://www.npmjs.com/package/tiktoken" target="blank">tiktoken )</a></b></span>
         <br></br>
-        <br></br>
-        <span>caliculated by <b><a href="https://www.npmjs.com/package/tiktoken" target="blank">tiktoken</a></b></span>
+        <span>消費トークン：</span> {tokenUsage?.total_tokens || 0 }
       </div>
     </div>
   );
