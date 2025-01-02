@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { encoding_for_model } from "tiktoken";
 
 type ApiResponse = {
   result: string;
@@ -9,6 +10,27 @@ const Home: React.FC = () => {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [tokenCount, setTokenCount] = useState(0);
+
+  // トークン数を計算する関数
+  const calculateTokens = (text: string) => {
+    const encoding = encoding_for_model("gpt-4o-mini"); // GPT-4o-mini用エンコーディングを指定
+    const tokens = encoding.encode(text);
+    console.log(`tokens: ${tokens}`)
+    encoding.free(); // メモリ解放
+    return tokens.length;
+  };
+
+  // 入力が変更された時にトークン数を再計算
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    const task = e.target.value;
+    console.log(`task: ${task}`)
+    setTask(task);
+    const tokens = calculateTokens(task);
+    setTokenCount(tokens);
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +65,7 @@ const Home: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <textarea
           value={task}
-          onChange={(e) => setTask(e.target.value)}
+          onChange={(e) => handleChange(e)}
           placeholder="タスクを入力してください"
           rows={5}
           style={{
@@ -72,6 +94,21 @@ const Home: React.FC = () => {
           <p>{result}</p>
         </div>
       )}
+        <div
+        style={{
+          padding: "10px",
+          backgroundColor: "#f9f9f9",
+          border: "1px solid #ddd",
+          borderRadius: "4px",
+          marginTop: "10px",
+          fontSize: "16px",
+        }}
+        >
+        <span>推計トークン数:</span> {tokenCount}
+        <br></br>
+        <br></br>
+        <span>caliculated by <b><a href="https://github.com/openai/tiktoken/tree/main" target="blank">tiktoken</a></b></span>
+      </div>
     </div>
   );
 };
