@@ -61,16 +61,18 @@ const Home: React.FC = () => {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h1>タスクを実行</h1>
+      <h1>browser-use</h1>
+      <h2>Chatgptでブラウザを操作</h2>
       <form onSubmit={handleSubmit}>
         <textarea
           value={task}
           onChange={(e) => handleChange(e)}
-          placeholder="タスクを入力してください"
+          placeholder="https://www.google.com/でラーメン二郎を検索"
           rows={5}
           style={{
             width: "100%",
             padding: "0.5rem",
+            marginTop: "2rem",
             marginBottom: "1rem",
             fontSize: "16px",
           }}
@@ -81,6 +83,8 @@ const Home: React.FC = () => {
             padding: "0.5rem 1rem",
             fontSize: "16px",
             cursor: "pointer",
+            backgroundColor: "whitesmoke",
+            borderRadius: "4px"
           }}
           disabled={loading}
         >
@@ -100,7 +104,7 @@ const Home: React.FC = () => {
           backgroundColor: "#f9f9f9",
           border: "1px solid #ddd",
           borderRadius: "4px",
-          marginTop: "10px",
+          marginTop: "1rem",
           fontSize: "16px",
         }}
         >
