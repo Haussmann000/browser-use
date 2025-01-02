@@ -61,7 +61,7 @@ const Home: React.FC = () => {
 
   return (
     <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h1>browser-use</h1>
+      <h1><a href="https://github.com/browser-use/browser-use/" target="blank">browser-use</a></h1>
       <h2>Chatgptでブラウザを操作</h2>
       <form onSubmit={handleSubmit}>
         <textarea
@@ -75,6 +75,7 @@ const Home: React.FC = () => {
             marginTop: "2rem",
             marginBottom: "1rem",
             fontSize: "16px",
+            borderRadius: "4px"
           }}
         />
         <button
@@ -111,7 +112,7 @@ const Home: React.FC = () => {
         <span>推計トークン数:</span> {tokenCount}
         <br></br>
         <br></br>
-        <span>caliculated by <b><a href="https://github.com/openai/tiktoken/tree/main" target="blank">tiktoken</a></b></span>
+        <span>caliculated by <b><a href="https://www.npmjs.com/package/tiktoken" target="blank">tiktoken</a></b></span>
       </div>
     </div>
   );
