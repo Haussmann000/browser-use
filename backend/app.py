@@ -33,11 +33,11 @@ class CustomAgent(Agent):
                 messages=messages,
                 temperature=0
             )
-            usage = response["usage"]
+            usage = response.usage
             return {
-                "prompt_tokens": usage["prompt_tokens"],
+                "prompt_tokens": usage.prompt_tokens,
                 "completion_tokens": usage.get("completion_tokens", 0),
-                "total_tokens": usage["total_tokens"]
+                "total_tokens": usage.total_tokens
             }
         except Exception as e:
             print(f"Error calculating tokens: {e}")
@@ -55,8 +55,10 @@ class CustomAgent(Agent):
         token_usage = await self.calculate_tokens(messages)
 
         # オリジナルのrunメソッドを実行
-        result = await super().run()
-
+        history = await super().run(max_steps=10)
+        print(f"result: {history}")
+        print(f"final_result: {history.final_result()}")
+        result = history.final_result()
         return {
             "result": result,
             "token_usage": token_usage
@@ -67,7 +69,7 @@ async def run_agent(task):
     llm = ChatOpenAI(model="gpt-4o-mini")
     browser = Browser(
         config=BrowserConfig(
-            headless=True,
+            headless=False,
         )
     )
 
@@ -91,7 +93,7 @@ def run_task():
 
         # 非同期タスクを実行
         result = asyncio.run(run_agent(task))
-        return jsonify({"result": result})
+        return jsonify({"result": result["result"]})
     except Exception as e:
         return jsonify({"error": f"エージェントの実行中にエラーが発生しました: {str(e)}"}), 500
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { encoding_for_model } from "tiktoken";
-
+import React from 'react'
 export interface TokenUsage {
   prompt_tokens: number;       // プロンプトに使用されたトークン数
   completion_tokens: number;   // 応答生成に使用されたトークン数
@@ -25,7 +25,6 @@ const Home: React.FC = () => {
   const calculateTokens = (text: string) => {
     const encoding = encoding_for_model("gpt-4o-mini"); // GPT-4o-mini用エンコーディングを指定
     const tokens = encoding.encode(text);
-    console.log(`tokens: ${tokens}`)
     encoding.free(); // メモリ解放
     return tokens.length;
   };
@@ -33,12 +32,22 @@ const Home: React.FC = () => {
   // 入力が変更された時にトークン数を再計算
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
     const task = e.target.value;
-    console.log(`task: ${task}`)
     setTask(task);
     const tokens = calculateTokens(task);
     setTokenCount(tokens);
   };
-
+  const ParseResult  = ({ body }: { body: string }) => {
+    body = JSON.stringify(body)
+    const texts = body.split("\\n").map((item, index) => {
+      return (
+        <React.Fragment key={index}>
+          {item}
+          <br />
+        </React.Fragment>
+      );
+    });
+    return <div>{texts}</div>
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,12 +62,13 @@ const Home: React.FC = () => {
         },
         body: JSON.stringify({ task }),
       });
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data: AgentResponse = await response.json();
+      console.log(`result: ${JSON.stringify(data.result)}`)
+      console.log(`result: ${JSON.stringify(data.token_usage)}`)
       setResult(data.result);
       setTokenUsage(data.token_usage);
     } catch (err) {
@@ -96,7 +106,7 @@ const Home: React.FC = () => {
             backgroundColor: "whitesmoke",
             borderRadius: "4px"
           }}
-          disabled={loading}
+          disabled={loading || !tokenCount}
         >
           {loading ? "送信中..." : "送信"}
         </button>
@@ -105,7 +115,9 @@ const Home: React.FC = () => {
       {result && (
         <div style={{ marginTop: "1rem" }}>
           <h2>結果:</h2>
-          <p>{result}</p>
+          <div>
+            <ParseResult body={result} />
+          </div>
         </div>
       )}
         <div
